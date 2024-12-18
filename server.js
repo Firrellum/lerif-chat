@@ -13,7 +13,7 @@ const server = app.listen(PORT, () => {
 
 
 const socketProtocol = (process.env.NODE_ENV === 'production') ? 'wss' : 'ws';
-const socket = new WebSocket(`${socketProtocol}://${window.location.host}`);
+const wss = new WebSocket(`${socketProtocol}://${window.location.host}`);
 
 
 wss.on("connection", (ws) => {
