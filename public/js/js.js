@@ -1,41 +1,43 @@
+// Check if the page is served over HTTPS (for production) or HTTP (for local dev)
 const socketProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-const ws = new WebSocket(`${socketProtocol}://${window.location.host}`);
-let username = '';
 
-function setUsername() {
-  const usernameInput = document.getElementById('username');
-  const enteredName = usernameInput.value.trim();
+// Establish the WebSocket connection using the appropriate protocol
+const socket = new WebSocket(`${socketProtocol}://${window.location.host}`);
 
-  if (enteredName) {
-    username = enteredName;
-    document.getElementById('usernameForm').style.display = 'none'; 
-    document.getElementById('chatApp').style.display = 'flex'; 
-  } else {
-    alert('Please enter a valid username.'); 
-  }
-}
+// Function to handle WebSocket messages
+socket.onmessage = function(event) {
+  const message = event.data;
+  console.log(`Message from server: ${message}`);
 
-ws.onmessage = (event) => {
-  const messages = document.getElementById('messages');
-  const messageData = JSON.parse(event.data);
-
-  const messageDiv = document.createElement('div');
-  messageDiv.textContent = `${messageData.username}: ${messageData.message}`;
-  messages.appendChild(messageDiv);
-  messages.scrollTop = messages.scrollHeight;
+  // Insert the message into the chat window (you can customize this)
+  const chatBox = document.getElementById('chatBox');
+  chatBox.innerHTML += `<p>${message}</p>`;
 };
 
-function sendMessage() {
-  const input = document.getElementById('message');
-  const messageText = input.value.trim();
+// Handle WebSocket errors
+socket.onerror = function(error) {
+  console.log(`WebSocket Error: ${error}`);
+};
 
-  if (messageText) {
-    const messageData = {
-      username: username,
-      message: messageText,
-    };
+// Handle WebSocket open event (when the connection is established)
+socket.onopen = function() {
+  console.log('WebSocket connection established');
+};
 
-    ws.send(JSON.stringify(messageData)); 
-    input.value = '';
-  }
-}
+// Send a message when the form is submitted
+document.getElementById('messageForm').onsubmit = function(event) {
+  event.preventDefault();
+
+  const messageInput = document.getElementById('messageInput');
+  const usernameInput = document.getElementById('usernameInput');
+  const message = {
+    username: usernameInput.value,
+    text: messageInput.value,
+  };
+
+  // Send the message as JSON
+  socket.send(JSON.stringify(message));
+
+  // Clear the input field after sending the message
+  messageInput.value = '';
+};
