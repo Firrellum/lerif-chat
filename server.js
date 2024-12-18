@@ -11,9 +11,7 @@ const server = app.listen(PORT, () => {
   console.log(`running on port: ${PORT}`);
 });
 
-
-const socketProtocol = (process.env.NODE_ENV === 'production') ? 'wss' : 'ws';
-const wss = new WebSocket(`${socketProtocol}://${window.location.host}`);
+const wss = new WebSocket.Server({ server });
 
 
 wss.on("connection", (ws) => {
