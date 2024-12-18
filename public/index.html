@@ -1,27 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LerrifChat</title>
-  <link rel="stylesheet" href="./css/css.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LerrifChat</title>
+    <link rel="stylesheet" href="css/css.css"> <!-- Link to the CSS file -->
+    <script defer src="js/js.js"></script> <!-- Link to the JS file -->
 </head>
 <body>
-  <div id="usernameForm">
-    <h1>Enter Your Username</h1>
-    <input type="text" id="username" placeholder="Enter your name" />
-    <button onclick="setUsername()">Start Chat</button>
-  </div>
+    <div class="chat-container">
+        <!-- Login / Username Entry -->
+        <div id="login-container" class="login-container">
+            <h2>Enter your name to start chatting</h2>
+            <input type="text" id="usernameInput" placeholder="Enter username" required />
+            <button id="enterButton" onclick="enterChat()">Enter Chat</button>
+        </div>
 
-  <div id="chatApp" style="display: none;">
-    <h1>LerrifChat <sup style="font-size: small;"><a href="version.html">v0.1</a><sup></h1>
-    <div id="messages"></div>
-    <div id="input">
-      <input type="text" id="message" placeholder="Type a message..." />
-      <button onclick="sendMessage()">Send</button>
+        <!-- Chat Interface -->
+        <div id="chat-container" class="chat-container" style="display:none;">
+            <div id="chatBox" class="chat-box"></div>
+            <form id="messageForm" class="message-form">
+                <input type="text" id="messageInput" placeholder="Type a message" required />
+                <button type="submit">Send</button>
+            </form>
+        </div>
     </div>
-  </div>
 
-  <script src="js/js.js"></script>
+    <script>
+        // When the user clicks 'Enter Chat' button
+        function enterChat() {
+            const usernameInput = document.getElementById('usernameInput');
+            const username = usernameInput.value.trim();
+            if (username) {
+                // Store the username in localStorage or sessionStorage
+                localStorage.setItem('username', username);
+
+                // Show chat container and hide login
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('chat-container').style.display = 'flex';
+            } else {
+                alert('Please enter a valid username!');
+            }
+        }
+
+        // Add logic to handle WebSocket connection (already in js.js)
+        const socketProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const socket = new WebSocket(`${socketProtocol}://${window.location.host}`);
+
+        socket.onmessage = function(event) {
+            const message = JSON.parse(event.data);
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML += `<p><strong>${message.username}:</strong> ${message.text}</p>`;
+        };
+
+        socket.onerror = function(error) {
+            console.log(`WebSocket Error: ${error}`);
+        };
+
+        socket.onopen = function() {
+            console.log('WebSocket connection established');
+        };
+
+        // Send message to server when form is submitted
+        document.getElementById('messageForm').onsubmit = function(event) {
+            event.preventDefault();
+            const messageInput = document.getElementById('messageInput');
+            const username = localStorage.getItem('username');
+            const message = {
+                username: username,
+                text: messageInput.value,
+            };
+            socket.send(JSON.stringify(message));
+            messageInput.value = ''; // Clear input after sending
+        };
+    </script>
 </body>
 </html>
