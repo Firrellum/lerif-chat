@@ -1,4 +1,5 @@
-const ws = new WebSocket(`ws://${window.location.host}`);
+const socketProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+const ws = new WebSocket(`${socketProtocol}://${window.location.host}`);
 let username = '';
 
 function setUsername() {
