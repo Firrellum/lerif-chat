@@ -1,0 +1,217 @@
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(45deg, #121212, #1a1a1a);
+    color: #ddd;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 10px;
+  }
+  
+  /* Header Styles */
+  h1 {
+    font-size: 2.5em;
+    color: #0ff;
+    text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  a{
+    text-decoration: none;
+  }
+  sup:hover{
+    cursor: pointer;
+    color:yellowgreen;
+  }
+  
+  /* Username Form */
+  #usernameForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    max-width: 90%;
+    width: 400px;
+    margin-top: 20px;
+  }
+  
+  #usernameForm input {
+    padding: 10px;
+    margin: 10px 0;
+    width: 100%;
+    font-size: 1.1em;
+    border-radius: 5px;
+    background: #222;
+    color: #fff;
+    border: 1px solid #0ff;
+  }
+  
+  #usernameForm button {
+    background: #0ff;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: 100%;
+  }
+  
+  #usernameForm button:hover {
+    background: #00b3b3;
+  }
+  
+  #usernameForm button:active {
+    background: #009c9c;
+  }
+  
+  /* Chat App Styles */
+  #chatApp {
+    /* display: flex; */
+    text-align: center;
+    max-width: 100%;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  #messages {
+    display: block;
+    text-align: left;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+    max-width: 600px;
+    height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+    margin-bottom: 20px;
+    margin-top: 20px;
+    font-size: 1.1em;
+    color: #fff;
+  }
+  
+  #messages div {
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background: rgba(0, 255, 255, 0.1);
+    transition: background 0.3s;
+  }
+  
+  #messages div:hover {
+    background: rgba(0, 255, 255, 0.3);
+  }
+  
+  /* Message Input Area */
+  #input {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 600px;
+    border-top: 2px solid #0ff;
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+  
+  input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    background: #222;
+    color: #fff;
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+  
+  input[type="text"]:focus {
+    background: #333;
+  }
+  
+  button {
+    background: #0ff;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: 15%;
+  }
+  
+  button:hover {
+    background: #00b3b3;
+  }
+  
+  button:active {
+    background: #009c9c;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 2em;
+    }
+  
+    #usernameForm {
+      width: 90%;
+      max-width: 400px;
+    }
+  
+    #messages {
+      width: 90%;
+      max-width: 100%;
+    }
+  
+    #input {
+      flex-direction: column;
+      align-items: center;
+      width: 90%;
+    }
+  
+    input[type="text"] {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  
+    button {
+      width: 100%;
+      margin-top: 10px;
+    }
+  }
+  
+  @media (max-width: 400px) {
+    h1 {
+      font-size: 1.5em;
+    }
+  
+    #messages {
+      height: 250px;
+    }
+  
+    input[type="text"] {
+      font-size: 1em;
+    }
+  
+    button {
+      font-size: 1em;
+    }
+  }
+  

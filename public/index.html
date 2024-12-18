@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LerrifChat</title>
+  <link rel="stylesheet" href="./css/css.css">
+</head>
+<body>
+  <div id="usernameForm">
+    <h1>Enter Your Username</h1>
+    <input type="text" id="username" placeholder="Enter your name" />
+    <button onclick="setUsername()">Start Chat</button>
+  </div>
+
+  <div id="chatApp" style="display: none;">
+    <h1>LerrifChat <sup style="font-size: small;"><a href="version.html">v0.1</a><sup></h1>
+    <div id="messages"></div>
+    <div id="input">
+      <input type="text" id="message" placeholder="Type a message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script src="js/js.js"></script>
+</body>
+</html>
