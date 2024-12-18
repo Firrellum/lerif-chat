@@ -11,7 +11,10 @@ const server = app.listen(PORT, () => {
   console.log(`running on port: ${PORT}`);
 });
 
-const wss = new WebSocketServer({ server });
+
+const socketProtocol = (process.env.NODE_ENV === 'production') ? 'wss' : 'ws';
+const socket = new WebSocket(`${socketProtocol}://${window.location.host}`);
+
 
 wss.on("connection", (ws) => {
   console.log("New client connected!");
