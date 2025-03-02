@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LerrifChat</title>
-    <link rel="stylesheet" href="css/css.css"> <!-- Link to the CSS file -->
-    <script defer src="js/js.js"></script> <!-- Link to the JS file -->
+    <link rel="stylesheet" href="css/css.css"> 
+    <script defer src="js/js.js"></script> 
 </head>
 <body>
     <div class="chat-container">
@@ -61,7 +61,7 @@
             console.log('WebSocket connection established');
         };
 
-        // Send message to server when form is submitted
+        
         document.getElementById('messageForm').onsubmit = function(event) {
             event.preventDefault();
             const messageInput = document.getElementById('messageInput');
@@ -71,7 +71,7 @@
                 text: messageInput.value,
             };
             socket.send(JSON.stringify(message));
-            messageInput.value = ''; // Clear input after sending
+            messageInput.value = ''; 
         };
     </script>
 </body>

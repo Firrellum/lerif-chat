@@ -6,6 +6,7 @@
   }
   
   body {
+    display: flex;
     font-family: 'Roboto', sans-serif;
     background: linear-gradient(45deg, #121212, #1a1a1a);
     color: #ddd;
@@ -21,10 +22,26 @@
   h1 {
     font-size: 2.5em;
     color: #0ff;
-    text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+    text-shadow: 0 0 10px #0ff, 0 0 20px rgb(221, 86, 7);
     margin-bottom: 20px;
     letter-spacing: 1px;
     text-align: center;
+  }
+
+  .login-container{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 20PX;
+  }
+
+  .chat-container{
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 400px;
+    align-items: center;
+    justify-content: center;
   }
 
   a{
@@ -55,11 +72,11 @@
     border-radius: 5px;
     background: #222;
     color: #fff;
-    border: 1px solid #0ff;
+    border: 1px solid rgb(221, 86, 7);
   }
   
   #usernameForm button {
-    background: #0ff;
+    background: rgb(221, 86, 7);
     color: #000;
     border: none;
     border-radius: 5px;
@@ -71,7 +88,7 @@
   }
   
   #usernameForm button:hover {
-    background: #00b3b3;
+    background: rgb(173, 67, 5);
   }
   
   #usernameForm button:active {
@@ -80,7 +97,6 @@
   
   /* Chat App Styles */
   #chatApp {
-    /* display: flex; */
     text-align: center;
     max-width: 100%;
     width: 100%;
@@ -88,6 +104,21 @@
     align-items: center;
   }
   
+  .message-form{
+    display: flex;
+    position: absolute;
+    bottom:10%; 
+    gap:10px;
+  }
+
+  .chat-box{
+    display: flex;
+    
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
   #messages {
     display: block;
     text-align: left;
@@ -98,7 +129,7 @@
     max-width: 600px;
     height: 300px;
     overflow-y: auto;
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+    box-shadow: 0 0 15px rgb(221, 86, 7);
     margin-bottom: 20px;
     margin-top: 20px;
     font-size: 1.1em;
@@ -123,7 +154,7 @@
     justify-content: space-between;
     width: 100%;
     max-width: 600px;
-    border-top: 2px solid #0ff;
+    border-top: 2px solid rgb(221, 86, 7);
     padding-top: 10px;
     margin-top: 10px;
   }
@@ -137,7 +168,7 @@
     background: #222;
     color: #fff;
     outline: none;
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    border: 1px solid rgb(173, 67, 5);
   }
   
   input[type="text"]:focus {
@@ -145,7 +176,7 @@
   }
   
   button {
-    background: #0ff;
+    background: rgb(221, 86, 7);
     color: #000;
     border: none;
     border-radius: 5px;
@@ -153,11 +184,10 @@
     font-size: 1.1em;
     cursor: pointer;
     transition: background 0.3s;
-    width: 15%;
   }
   
   button:hover {
-    background: #00b3b3;
+    background: rgb(173, 67, 5);
   }
   
   button:active {
