@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LerrifChat</title>
     <link rel="stylesheet" href="css/css.css"> 
-    <script defer src="js/js.js"></script> 
 </head>
 <body>
     <div class="chat-container">
@@ -13,7 +12,7 @@
         <div id="login-container" class="login-container">
             <h2>Enter your name to start chatting</h2>
             <input type="text" id="usernameInput" placeholder="Enter username" required />
-            <button id="enterButton" onclick="enterChat()">Enter Chat</button>
+            <button id="enterButton">Enter Chat</button>
         </div>
 
         <!-- Chat Interface -->
@@ -25,54 +24,6 @@
             </form>
         </div>
     </div>
-
-    <script>
-        // When the user clicks 'Enter Chat' button
-        function enterChat() {
-            const usernameInput = document.getElementById('usernameInput');
-            const username = usernameInput.value.trim();
-            if (username) {
-                // Store the username in localStorage or sessionStorage
-                localStorage.setItem('username', username);
-
-                // Show chat container and hide login
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('chat-container').style.display = 'flex';
-            } else {
-                alert('Please enter a valid username!');
-            }
-        }
-
-        // Add logic to handle WebSocket connection (already in js.js)
-        const socketProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const socket = new WebSocket(`${socketProtocol}://${window.location.host}`);
-
-        socket.onmessage = function(event) {
-            const message = JSON.parse(event.data);
-            const chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML += `<p><strong>${message.username}:</strong> ${message.text}</p>`;
-        };
-
-        socket.onerror = function(error) {
-            console.log(`WebSocket Error: ${error}`);
-        };
-
-        socket.onopen = function() {
-            console.log('WebSocket connection established');
-        };
-
-        
-        document.getElementById('messageForm').onsubmit = function(event) {
-            event.preventDefault();
-            const messageInput = document.getElementById('messageInput');
-            const username = localStorage.getItem('username');
-            const message = {
-                username: username,
-                text: messageInput.value,
-            };
-            socket.send(JSON.stringify(message));
-            messageInput.value = ''; 
-        };
-    </script>
+    <script type="module" src="./js/js.js"></script> 
 </body>
 </html>

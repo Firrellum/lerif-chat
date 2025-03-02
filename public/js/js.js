@@ -1,34 +1,49 @@
-const socketProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-
+// WebSocket connection setup
+const socketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
 const socket = new WebSocket(`${socketProtocol}://${window.location.host}`);
 
-socket.onmessage = function(event) {
-  const message = event.data;
-  console.log(`Message from server: ${message}`);
-
-  const chatBox = document.getElementById('chatBox');
-  chatBox.innerHTML += `<p>${message}</p>`;
+socket.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    const chatBox = document.getElementById("chatBox");
+    chatBox.innerHTML += `<p><strong>${message.username}:</strong> ${message.text}</p>`;
 };
 
-socket.onerror = function(error) {
-  console.log(`WebSocket Error: ${error}`);
+socket.onerror = (error) => {
+    console.log(`WebSocket Error: ${error}`);
 };
 
-socket.onopen = function() {
-  console.log('WebSocket connection established');
+socket.onopen = () => {
+    console.log("WebSocket connection established");
 };
 
-document.getElementById('messageForm').onsubmit = function(event) {
-  event.preventDefault();
+// Handle entering the chat
+document.getElementById("enterButton").addEventListener("click", () => {
+    const usernameInput = document.getElementById("usernameInput");
+    const username = usernameInput.value.trim();
+    
+    if (username) {
+        localStorage.setItem("username", username);
 
-  const messageInput = document.getElementById('messageInput');
-  const usernameInput = document.getElementById('usernameInput');
-  const message = {
-    username: usernameInput.value,
-    text: messageInput.value,
-  };
+        // Show chat container and hide login
+        document.getElementById("login-container").style.display = "none";
+        document.getElementById("chat-container").style.display = "flex";
+    } else {
+        alert("Please enter a valid username!");
+    }
+});
 
-  socket.send(JSON.stringify(message));
+// Handle sending messages
+document.getElementById("messageForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const messageInput = document.getElementById("messageInput");
+    const username = localStorage.getItem("username");
 
-  messageInput.value = '';
-};
+    if (messageInput.value.trim()) {
+        const message = {
+            username: username,
+            text: messageInput.value.trim(),
+        };
+        socket.send(JSON.stringify(message));
+        messageInput.value = "";
+    }
+});
