@@ -8,26 +8,41 @@ const wss = new WebSocketServer({ server });
 
 app.use(express.static("public"));
 
+let connectetUsers = 0;
+
 wss.on("connection", (ws) => {
-    console.log("New client connected!");
+  console.log("New client connected!");
+  connectetUsers++;
 
-    ws.on("message", (message) => {
-        console.log(`Received: ${message}`);
+  ws.on("message", (message) => {
+  console.log(`Received: ${message}`);
+  
+  try {
+    let parsedMessage = JSON.parse(message); 
+    parsedMessage.online = connectetUsers; 
+    console.log(parsedMessage.online);
 
-        // Broadcast the message to all connected clients
-        wss.clients.forEach((client) => {
-            if (client.readyState === ws.OPEN) {
-                client.send(message.toString());
-            }
-        });
+    const updatedMessage = JSON.stringify(parsedMessage); 
+
+
+    wss.clients.forEach((client) => {
+        if (client.readyState === ws.OPEN) {
+            client.send(updatedMessage);
+        }
     });
 
-    ws.on("close", () => {
-        console.log("Client disconnected");
-    });
+  } catch (error) {
+    console.error("Error parsing message:", error);
+  }
+});
+
+  ws.on("close", () => {
+    console.log("Client disconnected");
+    connectetUsers--;
+  });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`Running on port: ${PORT}`);
+  console.log(`Running on port: ${PORT}`);
 });
