@@ -18,12 +18,20 @@ socket.onopen = () => {
   console.log("WebSocket connection established");
 };
 
+document.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem('lerrif-username')){
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("chat-container").style.display = "flex";
+  }
+})
+
+
 document.getElementById("enterButton").addEventListener("click", () => {
   const usernameInput = document.getElementById("usernameInput");
   const username = usernameInput.value.trim();
 
   if (username) {
-    localStorage.setItem("username", username);
+    localStorage.setItem("lerrif-username", username);
     document.getElementById("login-container").style.display = "none";
     document.getElementById("chat-container").style.display = "flex";
   } else {
@@ -35,7 +43,7 @@ document.getElementById("enterButton").addEventListener("click", () => {
 document.getElementById("messageForm").addEventListener("submit", (event) => {
   event.preventDefault();
   const messageInput = document.getElementById("messageInput");
-  const username = localStorage.getItem("username");
+  const username = localStorage.getItem("lerrif-username");
 
   if (messageInput.value.trim()) {
     const message = {
