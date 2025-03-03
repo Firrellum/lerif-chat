@@ -8,6 +8,11 @@ const wss = new WebSocketServer({ server });
 
 app.use(express.static("public"));
 
+app.get('/ping', (req, res) => {
+  console.log('Ping received:', req.method, req.url);
+  res.status(200).json({ message: 'Ping received' });
+});
+
 let connectetUsers = 0;
 
 wss.on("connection", (ws) => {

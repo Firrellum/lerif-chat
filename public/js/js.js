@@ -49,3 +49,23 @@ document.getElementById("messageForm").addEventListener("submit", (event) => {
   }
 
 });
+
+async function pingServer() {
+  const pingDisplay = document.getElementById('ping');
+  try {
+    const res = await fetch(`/ping`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include"
+    });
+    const data = await res.json();
+    console.log('Ping response:', data);
+    pingDisplay.textContent = '🟢 Connected';
+  } catch (error) {
+    console.error('Error pinging server:', error);
+  }
+}
+
+
+
+pingServer();
