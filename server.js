@@ -5,19 +5,16 @@ import cors from "cors";
 
 const app = express();
 const server = createServer(app);
-// Create WebSocketServer without attaching it to the server
 const wss = new WebSocketServer({ noServer: true });
 
-// CORS configuration for HTTP requests
 app.use(cors({
-    origin: "https://firrelsoftware.onrender.com", // Allow the portfolio domain
+    origin: "https://firrelsoftware.onrender.com", 
     methods: ["GET", "POST"],
     credentials: true
 }));
 
 app.use(express.static("public"));
 
-// Health check endpoint
 app.get('/ping', (req, res) => {
     console.log(`Ping received: ${req.method} ${req.url} from ${req.headers.origin}`);
     res.set('Access-Control-Allow-Origin', 'https://firrelsoftware.onrender.com');
@@ -28,10 +25,8 @@ app.get('/ping', (req, res) => {
 
 let connectedUsers = 0;
 
-// Keep-alive mechanism: Track active WebSocket connections
 const activeConnections = new Set();
 
-// Handle WebSocket handshake and validate origins
 server.on('upgrade', (request, socket, head) => {
     const origin = request.headers.origin;
     console.log(`WebSocket handshake request from origin: ${origin}`);
@@ -56,14 +51,12 @@ wss.on("connection", (ws, req) => {
     connectedUsers++;
     activeConnections.add(ws);
 
-    // Send a welcome message to the new client
     ws.send(JSON.stringify({
         username: "Server",
         text: "Welcome to the chat!",
         online: connectedUsers
     }));
 
-    // Keep-alive: Ping clients every 30 seconds to detect stale connections
     const pingInterval = setInterval(() => {
         if (ws.isAlive === false) {
             console.log(`Terminating stale connection for client from ${origin}`);
@@ -89,7 +82,6 @@ wss.on("connection", (ws, req) => {
 
             const updatedMessage = JSON.stringify(parsedMessage);
 
-            // Broadcast the message to all connected clients
             wss.clients.forEach((client) => {
                 if (client.readyState === ws.OPEN) {
                     client.send(updatedMessage);
@@ -106,7 +98,6 @@ wss.on("connection", (ws, req) => {
         activeConnections.delete(ws);
         clearInterval(pingInterval);
 
-        // Broadcast updated online count
         const updateMessage = JSON.stringify({
             username: "Server",
             text: "A user has disconnected.",
@@ -124,7 +115,6 @@ wss.on("connection", (ws, req) => {
     });
 });
 
-// Clean up stale connections on server shutdown
 wss.on("close", () => {
     console.log("WebSocket server is closing");
     activeConnections.forEach((ws) => {
