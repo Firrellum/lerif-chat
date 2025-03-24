@@ -78,15 +78,26 @@ wss.on("connection", (ws, req) => {
         
         try {
             let parsedMessage = JSON.parse(message);
-            parsedMessage.online = connectedUsers;
-
-            const updatedMessage = JSON.stringify(parsedMessage);
-
-            wss.clients.forEach((client) => {
-                if (client.readyState === ws.OPEN) {
-                    client.send(updatedMessage);
-                }
-            });
+    
+            if (parsedMessage.type === 'typing') {
+                const typingMessage = JSON.stringify({
+                    type: 'typing',
+                    username: parsedMessage.username
+                });
+                wss.clients.forEach((client) => {
+                    if (client !== ws && client.readyState === ws.OPEN) {
+                        client.send(typingMessage);
+                    }
+                });
+            } else {
+                parsedMessage.online = connectedUsers;
+                const updatedMessage = JSON.stringify(parsedMessage);
+                wss.clients.forEach((client) => {
+                    if (client.readyState === ws.OPEN) {
+                        client.send(updatedMessage);
+                    }
+                });
+            }
         } catch (error) {
             console.error("Error parsing message:", error);
         }
