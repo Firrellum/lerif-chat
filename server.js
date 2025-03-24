@@ -7,35 +7,42 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
+// CORS configuration for HTTP requests
 app.use(cors({
-    origin: "https://firrelsoftware.onrender.com", 
+    origin: "https://firrelsoftware.onrender.com", // Allow the portfolio domain
     methods: ["GET", "POST"],
     credentials: true
 }));
 
 app.use(express.static("public"));
 
+// Health check endpoint
 app.get('/ping', (req, res) => {
-    console.log('Ping received:', req.method, req.url);
+    console.log(`Ping received: ${req.method} ${req.url} from ${req.headers.origin}`);
     res.set('Access-Control-Allow-Origin', 'https://firrelsoftware.onrender.com');
     res.set('Access-Control-Allow-Methods', 'GET, POST');
     res.set('Access-Control-Allow-Credentials', 'true');
     res.status(200).json({ message: 'Ping received' });
 });
 
-let connectetUsers = 0;
+let connectedUsers = 0;
+
+// Keep-alive mechanism: Track active WebSocket connections
+const activeConnections = new Set();
+
+// Handle WebSocket handshake and validate origins
 server.on('upgrade', (request, socket, head) => {
     const origin = request.headers.origin;
-    console.log('WebSocket handshake request from origin:', origin);
+    console.log(`WebSocket handshake request from origin: ${origin}`);
 
-    // const allowedOrigins = ["https://firrelsoftware.onrender.com"];
-    // const isWildcard = allowedOrigins.length === 1 && allowedOrigins[0] === "*";
-    // if (!isWildcard && !allowedOrigins.includes(origin)) {
-    //     console.log(`WebSocket handshake rejected from unauthorized origin: ${origin}`);
-    //     socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
-    //     socket.destroy();
-    //     return;
-    // }
+    const allowedOrigins = ["https://firrelsoftware.onrender.com"];
+    const isWildcard = allowedOrigins.length === 1 && allowedOrigins[0] === "*";
+    if (!isWildcard && !allowedOrigins.includes(origin)) {
+        console.log(`WebSocket handshake rejected from unauthorized origin: ${origin}`);
+        socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
+        socket.destroy();
+        return;
+    }
 
     wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit('connection', ws, request);
@@ -44,19 +51,44 @@ server.on('upgrade', (request, socket, head) => {
 
 wss.on("connection", (ws, req) => {
     const origin = req.headers.origin;
-    console.log("New client connected! Origin:", origin);
-    connectetUsers++;
+    console.log(`New client connected! Origin: ${origin}`);
+    connectedUsers++;
+    activeConnections.add(ws);
+
+    // Send a welcome message to the new client
+    ws.send(JSON.stringify({
+        username: "Server",
+        text: "Welcome to the chat!",
+        online: connectedUsers
+    }));
+
+    // Keep-alive: Ping clients every 30 seconds to detect stale connections
+    const pingInterval = setInterval(() => {
+        if (ws.isAlive === false) {
+            console.log(`Terminating stale connection for client from ${origin}`);
+            activeConnections.delete(ws);
+            connectedUsers--;
+            ws.terminate();
+            return;
+        }
+        ws.isAlive = false;
+        ws.ping();
+    }, 30000);
+
+    ws.on("pong", () => {
+        ws.isAlive = true;
+    });
 
     ws.on("message", (message) => {
         console.log(`Received: ${message}`);
         
         try {
-            let parsedMessage = JSON.parse(message); 
-            parsedMessage.online = connectetUsers; 
-            console.log(`Online users: ${parsedMessage.online}`);
+            let parsedMessage = JSON.parse(message);
+            parsedMessage.online = connectedUsers;
 
-            const updatedMessage = JSON.stringify(parsedMessage); 
+            const updatedMessage = JSON.stringify(parsedMessage);
 
+            // Broadcast the message to all connected clients
             wss.clients.forEach((client) => {
                 if (client.readyState === ws.OPEN) {
                     client.send(updatedMessage);
@@ -69,7 +101,21 @@ wss.on("connection", (ws, req) => {
 
     ws.on("close", (code, reason) => {
         console.log(`Client disconnected. Code: ${code}, Reason: ${reason}`);
-        connectetUsers--;
+        connectedUsers--;
+        activeConnections.delete(ws);
+        clearInterval(pingInterval);
+
+        // Broadcast updated online count
+        const updateMessage = JSON.stringify({
+            username: "Server",
+            text: "A user has disconnected.",
+            online: connectedUsers
+        });
+        wss.clients.forEach((client) => {
+            if (client.readyState === ws.OPEN) {
+                client.send(updateMessage);
+            }
+        });
     });
 
     ws.on("error", (error) => {
@@ -77,7 +123,16 @@ wss.on("connection", (ws, req) => {
     });
 });
 
+// Clean up stale connections on server shutdown
+wss.on("close", () => {
+    console.log("WebSocket server is closing");
+    activeConnections.forEach((ws) => {
+        ws.terminate();
+    });
+    activeConnections.clear();
+});
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`Running on port: ${PORT}`);
+    console.log(`Server running on port: ${PORT}`);
 });
