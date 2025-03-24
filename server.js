@@ -8,7 +8,7 @@ const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
 app.use(cors({
-    origin: "https://firrelsoftware.onrender.com", // Allow the portfolio domain
+    origin: "https://firrelsoftware.onrender.com", 
     methods: ["GET", "POST"],
     credentials: true
 }));
@@ -24,14 +24,13 @@ app.get('/ping', (req, res) => {
 });
 
 let connectetUsers = 0;
-
-// Handle WebSocket handshake and add CORS headers
 server.on('upgrade', (request, socket, head) => {
     const origin = request.headers.origin;
     console.log('WebSocket handshake request from origin:', origin);
 
     const allowedOrigins = ["https://firrelsoftware.onrender.com"];
-    if (allowedOrigins !== ["*"] && !allowedOrigins.includes(origin)) {
+    const isWildcard = allowedOrigins.length === 1 && allowedOrigins[0] === "*";
+    if (!isWildcard && !allowedOrigins.includes(origin)) {
         console.log(`WebSocket handshake rejected from unauthorized origin: ${origin}`);
         socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
         socket.destroy();
