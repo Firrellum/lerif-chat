@@ -1,10 +1,18 @@
 import express from "express";
 import { WebSocketServer } from "ws";
 import { createServer } from "http";
-
+// import cors from "cors";
+// "cors": "^2.8.5",
 const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
+
+
+// app.use(cors({
+//   origin: "*", 
+//   methods: ["GET", "POST"], 
+//   credentials: true 
+// }));
 
 app.use(express.static("public"));
 
