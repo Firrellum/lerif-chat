@@ -7,12 +7,14 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
-// Enable CORS for all routes
+
 app.use(cors({
-    origin: "*", // Allow all origins (for development); replace with your portfolio's domain in production
+    origin: "*", 
     methods: ["GET", "POST"],
     credentials: true
 }));
+
+
 
 app.use(express.static("public"));
 
@@ -28,12 +30,12 @@ wss.on("connection", (ws, req) => {
     console.log("New client connected! Origin:", origin);
 
   
-    const allowedOrigins = ["*"]; 
-    if (true && !allowedOrigins.includes(origin)) {
-        console.log(`Connection rejected from unauthorized origin: ${origin}`);
-        ws.close(1008, "Unauthorized origin");
-        return;
-    }
+    const allowedOrigins = ["*"];
+    // if (allowedOrigins !== ["*"] && !allowedOrigins.includes(origin)) {
+    //     console.log(`Connection rejected from unauthorized origin: ${origin}`);
+    //     ws.close(1008, "Unauthorized origin");
+    //     return;
+    // }
 
     connectetUsers++;
 
