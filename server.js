@@ -5,7 +5,8 @@ import cors from "cors";
 
 const app = express();
 const server = createServer(app);
-const wss = new WebSocketServer({ server });
+// Create WebSocketServer without attaching it to the server
+const wss = new WebSocketServer({ noServer: true });
 
 // CORS configuration for HTTP requests
 app.use(cors({
