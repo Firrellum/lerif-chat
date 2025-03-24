@@ -2,7 +2,8 @@ import express from "express";
 import { WebSocketServer } from "ws";
 import { createServer } from "http";
 // import cors from "cors";
-// "cors": "^2.8.5",
+// "express": "^4.21.2",
+
 const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
