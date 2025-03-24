@@ -8,7 +8,7 @@ const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
 app.use(cors({
-    origin: "https://firrelsoftware.onrender.com", // Replace with your deployed domain
+    origin: "https://firrelsoftware.onrender.com", // Allow the portfolio domain
     methods: ["GET", "POST"],
     credentials: true
 }));
@@ -31,7 +31,7 @@ server.on('upgrade', (request, socket, head) => {
     console.log('WebSocket handshake request from origin:', origin);
 
     const allowedOrigins = ["https://firrelsoftware.onrender.com"];
-    if (true && !allowedOrigins.includes(origin)) {
+    if (allowedOrigins !== ["*"] && !allowedOrigins.includes(origin)) {
         console.log(`WebSocket handshake rejected from unauthorized origin: ${origin}`);
         socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
         socket.destroy();
@@ -46,7 +46,6 @@ server.on('upgrade', (request, socket, head) => {
 wss.on("connection", (ws, req) => {
     const origin = req.headers.origin;
     console.log("New client connected! Origin:", origin);
-
     connectetUsers++;
 
     ws.on("message", (message) => {
@@ -55,7 +54,7 @@ wss.on("connection", (ws, req) => {
         try {
             let parsedMessage = JSON.parse(message); 
             parsedMessage.online = connectetUsers; 
-            console.log(parsedMessage.online);
+            console.log(`Online users: ${parsedMessage.online}`);
 
             const updatedMessage = JSON.stringify(parsedMessage); 
 
@@ -69,9 +68,13 @@ wss.on("connection", (ws, req) => {
         }
     });
 
-    ws.on("close", () => {
-        console.log("Client disconnected");
+    ws.on("close", (code, reason) => {
+        console.log(`Client disconnected. Code: ${code}, Reason: ${reason}`);
         connectetUsers--;
+    });
+
+    ws.on("error", (error) => {
+        console.error("WebSocket error:", error);
     });
 });
 
