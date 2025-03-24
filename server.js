@@ -3,60 +3,67 @@ import { WebSocketServer } from "ws";
 import { createServer } from "http";
 import cors from "cors";
 
-
 const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
-
+// Enable CORS for all routes
 app.use(cors({
-  origin: "*", 
-  methods: ["GET", "POST"], 
-  credentials: true 
+    origin: "*", // Allow all origins (for development); replace with your portfolio's domain in production
+    methods: ["GET", "POST"],
+    credentials: true
 }));
 
 app.use(express.static("public"));
 
 app.get('/ping', (req, res) => {
-  console.log('Ping received:', req.method, req.url);
-  res.status(200).json({ message: 'Ping received' });
+    console.log('Ping received:', req.method, req.url);
+    res.status(200).json({ message: 'Ping received' });
 });
 
 let connectetUsers = 0;
 
-wss.on("connection", (ws) => {
-  console.log("New client connected!");
-  connectetUsers++;
+wss.on("connection", (ws, req) => {
+    const origin = req.headers.origin;
+    console.log("New client connected! Origin:", origin);
 
-  ws.on("message", (message) => {
-  console.log(`Received: ${message}`);
   
-  try {
-    let parsedMessage = JSON.parse(message); 
-    parsedMessage.online = connectetUsers; 
-    console.log(parsedMessage.online);
+    const allowedOrigins = ["*"]; 
+    if (true && !allowedOrigins.includes(origin)) {
+        console.log(`Connection rejected from unauthorized origin: ${origin}`);
+        ws.close(1008, "Unauthorized origin");
+        return;
+    }
 
-    const updatedMessage = JSON.stringify(parsedMessage); 
+    connectetUsers++;
 
+    ws.on("message", (message) => {
+        console.log(`Received: ${message}`);
+        
+        try {
+            let parsedMessage = JSON.parse(message); 
+            parsedMessage.online = connectetUsers; 
+            console.log(parsedMessage.online);
 
-    wss.clients.forEach((client) => {
-        if (client.readyState === ws.OPEN) {
-            client.send(updatedMessage);
+            const updatedMessage = JSON.stringify(parsedMessage); 
+
+            wss.clients.forEach((client) => {
+                if (client.readyState === ws.OPEN) {
+                    client.send(updatedMessage);
+                }
+            });
+        } catch (error) {
+            console.error("Error parsing message:", error);
         }
     });
 
-  } catch (error) {
-    console.error("Error parsing message:", error);
-  }
-});
-
-  ws.on("close", () => {
-    console.log("Client disconnected");
-    connectetUsers--;
-  });
+    ws.on("close", () => {
+        console.log("Client disconnected");
+        connectetUsers--;
+    });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Running on port: ${PORT}`);
+    console.log(`Running on port: ${PORT}`);
 });
